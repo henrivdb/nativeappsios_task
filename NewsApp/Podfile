@@ -1,0 +1,7 @@
+platform :ios, '11.0'
+
+target 'NewsApp' do
+  use_frameworks!
+  pod 'RealmSwift', '~> 3.0'
+  pod 'Toast-Swift', '~> 3.0.1'
+end
