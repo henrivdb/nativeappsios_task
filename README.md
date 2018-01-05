@@ -1,2 +1,2 @@
-#Project course native apps II: IOS
-#Live news application
+Project course native apps II: IOS </br>
+Subject: Live news application
