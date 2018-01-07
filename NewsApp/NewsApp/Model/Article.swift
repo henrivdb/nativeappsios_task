@@ -11,7 +11,7 @@ class Article: Object{
     @objc dynamic var image : Data?
     @objc dynamic var author : String = ""
     
-    convenience init(headline:String, description:String, url:String, imageUrl:String, date:Date, author:String)
+    convenience init(headline:String, descrip:String, url:String, imageUrl:String, date:Date, author:String)
     {
         self.init()
         self.headline = headline

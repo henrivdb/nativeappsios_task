@@ -14,14 +14,15 @@ class ArticleViewController: UIViewController {
         headline.text = article?.headline
         descrip.text = article?.descrip
         DispatchQueue.main.async {
-        if self.article?.image == nil
-        {
-            self.image.image = #imageLiteral(resourceName: "NoImage")
-        }
-        else
-        {
+            if self.article?.image != nil
+            {
             self.image.image = UIImage(data : (self.article?.image)!)
-        }
+            }
+            else
+            {
+                self.image.image = #imageLiteral(resourceName: "NoImage")
+
+            }
         }
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd MMM yyyy"
@@ -30,9 +31,16 @@ class ArticleViewController: UIViewController {
     }
     
     @IBAction func onFullArticlePressed(_ sender: Any) {
-        
         let svc = SFSafariViewController(url: URL(string: (article?.url)!)!)
         present(svc, animated: true, completion: nil)
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        //backbutton weergeven wanneer gecollapsed
+        super.traitCollectionDidChange(previousTraitCollection)
+        if !splitViewController!.isCollapsed {
+            navigationItem.leftBarButtonItem = splitViewController!.displayModeButtonItem
+        }
     }
     
 }

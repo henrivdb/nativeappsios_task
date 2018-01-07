@@ -15,7 +15,15 @@ class NewsService{
     
     static func getNewsBySubject(for subject : String, completion: @escaping ([Article]?) -> Void) -> URLSessionTask
     {
-        let url = "https://newsapi.org/v2/everything?q=\(subject)&language=en&apiKey=\(NewsService.key)"
+        let cleanedSubject = subject.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\\", with: "")
+        let url = "https://newsapi.org/v2/everything?q=\(cleanedSubject)&language=en&apiKey=\(NewsService.key)"
+        
+        return downloadNews(for : url, completion: completion)
+    }
+    
+    static func getNewsBySource(for source : String, completion: @escaping ([Article]?) -> Void) -> URLSessionTask
+    {
+        let url = "https://newsapi.org/v2/top-headlines?sources=\(source)&apiKey=\(NewsService.key)"
         
         return downloadNews(for : url, completion: completion)
     }
@@ -25,8 +33,6 @@ class NewsService{
         let url = URL(string: urlString)!
         
         return session.dataTask(with: url) { (data, response, error) in
-            
-            var newsTask: URLSessionTask?
             
             let completion: ([Article]?) -> Void = {
                 articles in
@@ -40,7 +46,7 @@ class NewsService{
                     return
             }
             
-            guard let main = res["articles"] as? [[String : AnyObject]]
+            guard let arts = res["articles"] as? [[String : AnyObject]]
                 else {
                     return
             }
@@ -50,21 +56,16 @@ class NewsService{
             let dateFor: DateFormatter = DateFormatter()
             dateFor.dateFormat = "yyyy-MM-dd"
             
-            for jsonArticle in main
+            for art in arts
             {
-                if let headline = jsonArticle["title"] as? String, let description = jsonArticle["description"] as? String,
-                    let url = jsonArticle["url"] as? String, let imageUrl = jsonArticle["urlToImage"] as? String, let date = jsonArticle["publishedAt"] as? String, let auhtor = jsonArticle["author"] as? String
+                if let headline = art["title"] as? String, let descrip = art["description"] as? String,
+                    let url = art["url"] as? String, let imageUrl = art["urlToImage"] as? String, let date = art["publishedAt"] as? String, let auhtor = art["author"] as? String
                 {
                     let dateIndex = date.index(date.startIndex, offsetBy: 10)
                     
                     let dated = dateFor.date(from: String(date.prefix(upTo: dateIndex)))
                     
-                    let article = Article(headline : headline, description : description, url: url, imageUrl: imageUrl, date : (dated)!, author: auhtor)
-                    if imageUrl != "" && imageUrl != " "
-                    {
-                        newsTask = NewsService.downloadImage(for: article)
-                        newsTask?.resume()
-                    }
+                    let article = Article(headline : headline, descrip : descrip, url: url, imageUrl: imageUrl, date : (dated)!, author: auhtor)
                     
                     articles.append(article)
                 }
@@ -91,7 +92,7 @@ class NewsService{
                     return
             }
             
-            guard let main = res["sources"] as? [[String : AnyObject]]
+            guard let srcs = res["sources"] as? [[String : AnyObject]]
                 else {
                     return
             }
@@ -101,10 +102,10 @@ class NewsService{
             let dateFor: DateFormatter = DateFormatter()
             dateFor.dateFormat = "yyyy-MM-dd"
             
-            for jsonArticle in main
+            for src in srcs
             {
-                if let id = jsonArticle["id"] as? String, let name = jsonArticle["name"] as? String,
-                    let descrip = jsonArticle["description"] as? String
+                if let id = src["id"] as? String, let name = src["name"] as? String,
+                    let descrip = src["description"] as? String
                 {
                     let source = Source(id: id, name: name, descrip: descrip)
                     sources.append(source)
@@ -112,20 +113,5 @@ class NewsService{
             }
             completion(sources)
         }
-    }
-    
-    
-    private static func downloadImage(for article:Article) -> URLSessionTask
-    {
-        let url = URL(string:article.imageUrl)!
-        return session.dataTask(with: url, completionHandler: { (data, response, error) in
-            
-            DispatchQueue.main.async {
-                if data != nil
-                {
-                    article.image = Data(data!)
-                }
-            }
-        })
     }
 }

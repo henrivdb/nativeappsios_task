@@ -6,6 +6,7 @@ class CategoryViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var editButton: UIBarItem!
     
     private var categories : [String]?
     
@@ -30,20 +31,24 @@ class CategoryViewController: UIViewController {
             let search = searchBar.text
             let articlesViewController = segue.destination as! ArticlesViewController
             articlesViewController.subject = search
-            
         }
     }
     
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        //controleren of dat de searchbar leeg is
+        //indien leeg wordt de search segue niet uitgevoerd
         if identifier == "search" {
             return !(self.searchBar.text?.isEmpty)!
         }
         return true
     }
+    
+    @IBAction func onEditPressed(_ sender: Any) {
+        //verplaats rows van plaats
+        tableView.setEditing(!(tableView.isEditing), animated: true)
+        editButton.title = tableView.isEditing ? "Stop editing" : "Edit rows"
+    }
 }
-
-
-
 
 extension CategoryViewController: UITableViewDataSource
 {
@@ -61,24 +66,46 @@ extension CategoryViewController: UITableViewDataSource
         cell.textLabel!.text = category
         return cell
     }
+}
+
+
+extension CategoryViewController: UITableViewDelegate
+{
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        //rij van plaats veranderen
+        if destinationIndexPath.row >= 0 && destinationIndexPath.row < (categories?.count)!
+        {
+            let cat = categories?[sourceIndexPath.row]
+            categories?.remove(at: sourceIndexPath.row)
+            categories?.insert(cat!, at: destinationIndexPath.row)
+        }
+    }
     
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        //rij verwijderen
+        categories?.remove(at: indexPath.row)
+        tableView.deleteRows(at:[indexPath] ,with: UITableViewRowAnimation.fade)
+    }
 }
 
 extension CategoryViewController: UISplitViewControllerDelegate {
     
+    //zorgt ervoor dat de splitviewcontroller met master start ipv detail
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
         return true
     }
 }
 
-/*extension CategoryViewController: UISplitViewControllerDelegate {
-    
-    func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
-        // Do not collapse when the tasks view controller is showing, only when the empty view controller is showing.
-        let isShowingTasks = (secondaryViewController as? UINavigationController)?.topViewController is ArticlesViewController
-        return !isShowingTasks
+
+extension CategoryViewController: UISearchBarDelegate{
+    //zorgt ervoor dat als er op het toetsenbord op "search" gedrukt wordt dat er ook effectief de search segue wordt uitgevoerd
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        performSegue(withIdentifier: "search", sender:  self)
     }
-}*/
+}
+
+
+
 
 
 

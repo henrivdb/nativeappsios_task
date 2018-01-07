@@ -17,9 +17,10 @@ class ArticlesViewController: UIViewController {
     
     var subject: String?
     
+    var source: String?
+    
     override func viewDidLoad() {
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 140
         newsTask?.cancel()
         if subject != nil
         {
@@ -35,7 +36,14 @@ class ArticlesViewController: UIViewController {
             newsTask = NewsService.getNewsByCategory(for : category!, completion: { (arts) in
                 self.articles = arts!
                 self.tableView.reloadData()
-                
+            })
+        }
+        if source != nil
+        {
+            navItem.title = source
+            newsTask = NewsService.getNewsBySource(for : source!, completion: { (arts) in
+                self.articles = arts!
+                self.tableView.reloadData()
             })
         }
         newsTask!.resume()
@@ -81,7 +89,7 @@ extension ArticlesViewController: UITableViewDelegate {
             let realm = try! Realm()
             try! realm.write {
                 realm.add((self.articles?[indexPath.row])!)
-                self.view.makeToast("Article saved")
+                self.view.makeToast("Article saved" )
             }
             completionHandler(true)
         }

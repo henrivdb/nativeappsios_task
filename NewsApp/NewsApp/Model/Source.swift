@@ -1,15 +1,13 @@
-import RealmSwift
 import UIKit
 
-class Source: Object{
+class Source{
     
-    @objc dynamic var id : String = ""
-    @objc dynamic var name : String = ""
-    @objc dynamic var descrip : String = ""
+    var id : String
+    var name : String
+    var descrip : String
     
-    convenience init(id:String, name:String, descrip:String)
+    init(id:String, name:String, descrip:String)
     {
-        self.init()
         self.id = id
         self.name = name
         self.descrip = descrip
