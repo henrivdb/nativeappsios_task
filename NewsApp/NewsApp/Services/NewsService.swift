@@ -58,14 +58,13 @@ class NewsService{
             
             for art in arts
             {
-                if let headline = art["title"] as? String, let descrip = art["description"] as? String,
-                    let url = art["url"] as? String, let imageUrl = art["urlToImage"] as? String, let date = art["publishedAt"] as? String, let auhtor = art["author"] as? String
+                if let headline = art["title"] as? String, let description = art["description"] as? String, let url = art["url"] as? String, let imageUrl = art["urlToImage"] as? String, let date = art["publishedAt"] as? String, let auhtor = art["author"] as? String
                 {
                     let dateIndex = date.index(date.startIndex, offsetBy: 10)
                     
                     let dated = dateFor.date(from: String(date.prefix(upTo: dateIndex)))
                     
-                    let article = Article(headline : headline, descrip : descrip, url: url, imageUrl: imageUrl, date : (dated)!, author: auhtor)
+                    let article = Article(headline : headline, descrip : description, url: url, imageUrl: imageUrl, date : (dated)!, author: auhtor)
                     
                     articles.append(article)
                 }

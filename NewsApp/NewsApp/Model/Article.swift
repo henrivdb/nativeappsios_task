@@ -15,7 +15,7 @@ class Article: Object{
     {
         self.init()
         self.headline = headline
-        self.descrip = description
+        self.descrip = descrip
         self.url = url
         self.imageUrl = imageUrl
         self.date = date
