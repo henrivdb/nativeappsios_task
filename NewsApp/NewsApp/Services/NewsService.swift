@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 class NewsService{
-    static var key = "45ab4a88ef9749439d1af9d756688e9d"
+    static var key = ""
     
     private static var session = URLSession(configuration: .ephemeral)
     
